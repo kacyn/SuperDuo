@@ -8,7 +8,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,9 +17,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import it.jaschke.alexandria.data.BookContract;
 import it.jaschke.alexandria.services.BookService;
-import it.jaschke.alexandria.services.DownloadImage;
 
 
 public class BookDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -98,7 +98,7 @@ public class BookDetailFragment extends Fragment implements LoaderManager.Loader
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text) + bookTitle);
         shareActionProvider.setShareIntent(shareIntent);
 
         String bookSubTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.SUBTITLE));
@@ -112,17 +112,22 @@ public class BookDetailFragment extends Fragment implements LoaderManager.Loader
         ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
         ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
         String imgUrl = data.getString(data.getColumnIndex(BookContract.BookEntry.IMAGE_URL));
-        if(Patterns.WEB_URL.matcher(imgUrl).matches()){
+
+        ImageView bookImageView = (ImageView) rootView.findViewById(R.id.fullBookCover);
+        bookImageView.setVisibility(View.VISIBLE);
+        Picasso.with(getActivity()).load(imgUrl).into(bookImageView);
+
+        /*if(Patterns.WEB_URL.matcher(imgUrl).matches()){
             new DownloadImage((ImageView) rootView.findViewById(R.id.fullBookCover)).execute(imgUrl);
             rootView.findViewById(R.id.fullBookCover).setVisibility(View.VISIBLE);
-        }
+        }*/
 
         String categories = data.getString(data.getColumnIndex(BookContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
 
-        if(rootView.findViewById(R.id.right_container)!=null){
-            rootView.findViewById(R.id.backButton).setVisibility(View.INVISIBLE);
-        }
+//        if(rootView.findViewById(R.id.right_container)!=null){
+//            rootView.findViewById(R.id.backButton).setVisibility(View.INVISIBLE);
+//        }
 
     }
 

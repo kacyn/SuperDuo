@@ -17,6 +17,17 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true">
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/scan_button"
+                android:id="@+id/scan_button"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/or"/>
+
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -28,12 +39,6 @@
                 android:maxLines="1"
                 android:hint="@string/input_hint"
                 android:paddingRight="20dp"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/scan_button"
-                android:id="@+id/scan_button"/>
 
         </LinearLayout>
 

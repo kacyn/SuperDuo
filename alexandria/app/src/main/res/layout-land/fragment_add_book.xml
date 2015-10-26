@@ -8,34 +8,39 @@
         android:layout_height="fill_parent"
         android:layout_gravity="left|center_vertical">
 
-        <EditText
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
+            android:id="@+id/eancontainer"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:minEms="@integer/ean_width"
-            android:id="@+id/ean"
-            android:saveEnabled="true"
-            android:textIsSelectable="false"
-            android:maxLength="@integer/ean_size"
-            android:hint="@string/input_hint"
-            android:layout_marginLeft="40dp"
-            android:layout_marginStart="40dp"
-            android:maxLines="1"
             android:layout_marginTop="30dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:layout_centerHorizontal="true">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/scan_button"
-            android:id="@+id/scan_button"
-            android:layout_marginLeft="23dp"
-            android:layout_marginStart="23dp"
-            android:layout_alignBottom="@+id/ean"
-            android:layout_toRightOf="@+id/ean"
-            android:layout_toEndOf="@+id/ean"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/scan_button"
+                android:id="@+id/scan_button"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/or"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:minEms="@integer/ean_width"
+                android:id="@+id/ean"
+                android:saveEnabled="true"
+                android:maxLength="@integer/ean_size"
+                android:maxLines="1"
+                android:hint="@string/input_hint"
+                android:paddingRight="20dp"/>
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,12 +49,9 @@
             android:textSize="@dimen/head_line"
             android:textIsSelectable="true"
             android:textStyle="bold"
-            android:layout_below="@+id/scan_button"
-            android:layout_alignLeft="@+id/ean"
-            android:layout_alignStart="@+id/ean"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_below="@+id/eancontainer"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -97,8 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            >
+            android:layout_alignParentRight="true">
 
             <ImageButton
                 android:layout_width="wrap_content"
@@ -124,8 +125,6 @@
                 android:layout_gravity="bottom"
                 />
 
-
         </LinearLayout>
-
     </RelativeLayout>
 </FrameLayout>

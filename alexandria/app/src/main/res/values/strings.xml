@@ -10,8 +10,8 @@
     <string name="navigation_drawer_open" >Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
-    <string name="scan_button">Scan</string>
-    <string name="input_hint">Insert ISBN-13. Digits only.</string>
+    <string name="scan_button">Scan Barcode</string>
+    <string name="input_hint">Manually enter ISBN</string>
     <string name="book_cover">Bookcover</string>
 
     <string name="ok_button">Next</string>
@@ -42,4 +42,6 @@
     <string name="barcode_failure">No barcode captured</string>
     <string name="barcode_error">"Error reading barcode: %1$s"</string>
 
+    <string name="no_network_access">"No network access - Can't complete search"</string>
+    <string name="or">or</string>
 </resources>

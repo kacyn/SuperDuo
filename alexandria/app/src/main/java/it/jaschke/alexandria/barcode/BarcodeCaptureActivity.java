@@ -1,4 +1,4 @@
-package it.jaschke.alexandria;
+package it.jaschke.alexandria.barcode;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -33,6 +33,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import it.jaschke.alexandria.R;
 import it.jaschke.alexandria.ui.camera.CameraSource;
 import it.jaschke.alexandria.ui.camera.CameraSourcePreview;
 import it.jaschke.alexandria.ui.camera.GraphicOverlay;

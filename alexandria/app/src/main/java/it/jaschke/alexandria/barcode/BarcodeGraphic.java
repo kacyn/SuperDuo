@@ -1,4 +1,4 @@
-package it.jaschke.alexandria;
+package it.jaschke.alexandria.barcode;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

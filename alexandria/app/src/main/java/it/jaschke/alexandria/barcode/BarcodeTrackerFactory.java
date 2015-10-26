@@ -1,4 +1,4 @@
-package it.jaschke.alexandria;
+package it.jaschke.alexandria.barcode;
 
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
