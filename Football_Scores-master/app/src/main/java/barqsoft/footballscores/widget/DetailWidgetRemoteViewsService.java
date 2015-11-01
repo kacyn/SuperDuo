@@ -64,11 +64,13 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 final long identityToken = Binder.clearCallingIdentity();
                 //String location = Utility.getPreferredLocation(DetailWidgetRemoteViewsService.this);
 
-                data = getContentResolver().query(weatherForLocationUri,
+                Uri dataByDateUri = DatabaseContract.scores_table.buildScoreWithDate();
+
+                data = getContentResolver().query(dataByDateUri,
                         SCORES_COLUMNS,
                         null,
                         null,
-                        WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
+                        DatabaseContract.scores_table.TIME_COL + " ASC");
                 Binder.restoreCallingIdentity(identityToken);
             }
 

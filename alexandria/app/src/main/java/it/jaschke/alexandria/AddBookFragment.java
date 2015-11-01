@@ -33,7 +33,12 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     private EditText ean;
     private final int LOADER_ID = 0;
     private View rootView;
+    private final String ISBN = "isbn";
     private final String ISBN_CONTENT="isbnContent";
+    private final String BOOK_TITLE="bookTitle";
+    private final String BOOK_SUBTITLE="bookSubtitle";
+    private final String AUTHORS="authors";
+    private final String IMG_URL="imgUrl";
     private static final String SCAN_FORMAT = "scanFormat";
     private static final String SCAN_CONTENTS = "scanContents";
 
@@ -43,6 +48,12 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
 
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
+
+    //book details
+    private String mBookTitle;
+    private String mBookSubTitle;
+    private String mAuthors;
+    private String mImgUrl;
 
     private String mIsbn;
 
@@ -55,6 +66,13 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         if(ean!=null) {
             outState.putString(ISBN_CONTENT, ean.getText().toString());
         }
+
+        outState.putString(ISBN, mIsbn);
+        outState.putString(BOOK_TITLE, mBookTitle);
+        outState.putString(BOOK_SUBTITLE, mBookSubTitle);
+        outState.putString(AUTHORS, mAuthors);
+        outState.putString(IMG_URL, mImgUrl);
+
     }
 
     @Override
@@ -136,6 +154,14 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         if(savedInstanceState!=null){
             ean.setText(savedInstanceState.getString(ISBN_CONTENT));
             ean.setHint("");
+
+            mIsbn = savedInstanceState.getString(ISBN);
+            mBookTitle = savedInstanceState.getString(BOOK_TITLE);
+            mBookSubTitle = savedInstanceState.getString(BOOK_SUBTITLE);
+            mAuthors = savedInstanceState.getString(AUTHORS);
+            mImgUrl = savedInstanceState.getString(IMG_URL);
+
+            restartLoader();
         }
 
         return rootView;
@@ -146,20 +172,19 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == BARCODE_REQUEST) { // Please, use a final int instead of hardcoded int value
             if (resultCode == CommonStatusCodes.SUCCESS) {
-                Barcode barcode = (Barcode) data.getExtras().get(BarcodeObject);
 
-                String isbn = barcode.rawValue;
-                Log.v("Barcode", "Barcode result: " + isbn);
+                if(data != null) {
+                    Barcode barcode = (Barcode) data.getExtras().get(BarcodeObject);
 
-                if(isValidIsbn(isbn)) {
-                    mIsbn = isbn;
+                    String isbn = barcode.rawValue;
+                    Log.v("Barcode", "Barcode result: " + isbn);
 
-                    addBookToList(mIsbn);
+                    if(isValidIsbn(isbn)) {
+                        mIsbn = isbn;
+
+                        addBookToList(mIsbn);
+                    }
                 }
-
-
-                //Toast toast = Toast.makeText(getActivity(), "Scan success!  Adding to list of books.  Barcode result: " + barcode.rawValue, Toast.LENGTH_SHORT);
-                //toast.show();
             }
         }
     }
@@ -172,9 +197,15 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.v(LOG_TAG, "in oncreateloader");
 
+        Long isbn = 0l;
+
+        if(mIsbn != null) {
+            isbn = Long.parseLong(mIsbn);
+        }
+
         return new CursorLoader(
                 getActivity(),
-                BookContract.BookEntry.buildFullBookUri(Long.parseLong(mIsbn)),
+                BookContract.BookEntry.buildFullBookUri(isbn),
                 null,
                 null,
                 null,
@@ -190,28 +221,22 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             return;
         }
 
-        String bookTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.TITLE));
-        ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
+        mBookTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.TITLE));
+        ((TextView) rootView.findViewById(R.id.bookTitle)).setText(mBookTitle);
 
-        String bookSubTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.SUBTITLE));
-        ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
+        mBookSubTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.SUBTITLE));
+        ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(mBookSubTitle);
 
-        String authors = data.getString(data.getColumnIndex(BookContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
+        mAuthors = data.getString(data.getColumnIndex(BookContract.AuthorEntry.AUTHOR));
+        String[] authorsArr = mAuthors.split(",");
         ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        ((TextView) rootView.findViewById(R.id.authors)).setText(mAuthors.replace(",","\n"));
 
-        String imgUrl = data.getString(data.getColumnIndex(BookContract.BookEntry.IMAGE_URL));
+        mImgUrl = data.getString(data.getColumnIndex(BookContract.BookEntry.IMAGE_URL));
 
         ImageView bookImageView = (ImageView) rootView.findViewById(R.id.bookCover);
         bookImageView.setVisibility(View.VISIBLE);
-        Picasso.with(getActivity()).load(imgUrl).into(bookImageView);
-
-        //TODO: replace with picasso for caching
-       /* if(Patterns.WEB_URL.matcher(imgUrl).matches()){
-            new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgUrl);
-            rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
-        }*/
+        Picasso.with(getActivity()).load(mImgUrl).into(bookImageView);
 
         String categories = data.getString(data.getColumnIndex(BookContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
@@ -227,6 +252,12 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
 
     private void clearFields(){
         Log.v(LOG_TAG, "in clear fields");
+
+        mIsbn = null;
+        mBookTitle = null;
+        mBookSubTitle = null;
+        mAuthors = null;
+        mImgUrl = null;
 
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText("");
