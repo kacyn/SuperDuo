@@ -10,16 +10,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import barqsoft.footballscores.MainActivity;
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.service.myFetchService;
 
-/**
- * Provider for a scrollable weather detail widget
- */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class DetailWidgetProvider extends AppWidgetProvider {
 
@@ -58,8 +54,6 @@ public class DetailWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
-
-        Log.v(LOG_TAG, "in on receive of detail widget provider");
 
         super.onReceive(context, intent);
 

@@ -35,6 +35,7 @@ public class PagerFragment extends Fragment
             Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
             SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
             viewFragments[i] = new MainScreenFragment();
+            //pass arguments down to the mainscreenfragment
             viewFragments[i].setArguments(getArguments());
             viewFragments[i].setFragmentDate(mformat.format(fragmentdate));
         }

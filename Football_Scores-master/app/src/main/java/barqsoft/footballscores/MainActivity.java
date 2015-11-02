@@ -21,6 +21,7 @@ public class MainActivity extends ActionBarActivity
 
         double matchId = -1.0;
 
+        //get selected matchId from widget, add it to bundle
         if(getIntent() != null) {
             matchId = getIntent().getDoubleExtra(getString(R.string.match_id), -1.0);
             Log.v(LOG_TAG, "extra: " + matchId);
@@ -30,7 +31,7 @@ public class MainActivity extends ActionBarActivity
         if (savedInstanceState == null) {
             my_main = new PagerFragment();
 
-
+            //add matchId from bundle and pass it to the fragments
             Bundle bundle = new Bundle();
             bundle.putDouble(getString(R.string.match_id), matchId);
             my_main.setArguments(bundle);
@@ -70,24 +71,18 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
-        Log.v(save_tag,"will save");
-        Log.v(save_tag,"fragment: "+String.valueOf(my_main.mPagerHandler.getCurrentItem()));
-        Log.v(save_tag,"selected id: "+selected_match_id);
-        outState.putInt("Pager_Current",my_main.mPagerHandler.getCurrentItem());
-        outState.putInt("Selected_match",selected_match_id);
-        getSupportFragmentManager().putFragment(outState,"my_main",my_main);
+        outState.putInt(getString(R.string.pager_current),my_main.mPagerHandler.getCurrentItem());
+        outState.putInt(getString(R.string.selected_match),selected_match_id);
+        getSupportFragmentManager().putFragment(outState,getString(R.string.my_main),my_main);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
-        Log.v(save_tag,"will retrive");
-        Log.v(save_tag,"fragment: "+String.valueOf(savedInstanceState.getInt("Pager_Current")));
-        Log.v(save_tag,"selected id: "+savedInstanceState.getInt("Selected_match"));
-        current_fragment = savedInstanceState.getInt("Pager_Current");
-        selected_match_id = savedInstanceState.getInt("Selected_match");
-        my_main = (PagerFragment) getSupportFragmentManager().getFragment(savedInstanceState,"my_main");
+        current_fragment = savedInstanceState.getInt(getString(R.string.pager_current));
+        selected_match_id = savedInstanceState.getInt(getString(R.string.selected_match));
+        my_main = (PagerFragment) getSupportFragmentManager().getFragment(savedInstanceState,getString(R.string.my_main));
         super.onRestoreInstanceState(savedInstanceState);
     }
 }

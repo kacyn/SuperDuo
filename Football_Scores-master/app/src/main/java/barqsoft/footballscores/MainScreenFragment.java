@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +16,11 @@ import android.widget.ListView;
 import barqsoft.footballscores.data.DatabaseContract;
 import barqsoft.footballscores.service.myFetchService;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MainScreenFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
     public ScoresAdapter mAdapter;
     public static final int SCORES_LOADER = 0;
     private String[] fragmentdate = new String[1];
-    private int last_selected_item = -1;
 
     private static final String[] SCORES_COLUMNS = {
             DatabaseContract.scores_table._ID,
@@ -65,8 +60,6 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
             matchId = arguments.getDouble(getString(R.string.match_id));
         }
 
-        Log.v("Detail ", "extra: " + matchId);
-
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
@@ -74,12 +67,12 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         score_list.setAdapter(mAdapter);
         getLoaderManager().initLoader(SCORES_LOADER,null,this);
 
+        //retrieve match id from main activity if not available from widget
         if(matchId == -1.0) {
-            Log.v("Detail ", "value not coming from widget, match id: " + MainActivity.selected_match_id);
             mAdapter.detail_match_id = MainActivity.selected_match_id;
         }
+        //retrieve match id from widget
         else {
-            Log.v("Detail ", "value coming from widget");
             mAdapter.detail_match_id = matchId;
         }
 
@@ -92,7 +85,6 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
                 ViewHolder selected = (ViewHolder) view.getTag();
 
                 mAdapter.detail_match_id = selected.match_id;
-                Log.v("Detail ", "match id: " + selected.match_id);
                 MainActivity.selected_match_id = (int) selected.match_id;
                 mAdapter.notifyDataSetChanged();
             }
@@ -115,16 +107,6 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
     {
-        //Log.v(FetchScoreTask.LOG_TAG,"loader finished");
-        //cursor.moveToFirst();
-        /*
-        while (!cursor.isAfterLast())
-        {
-            Log.v(FetchScoreTask.LOG_TAG,cursor.getString(1));
-            cursor.moveToNext();
-        }
-        */
-
         int i = 0;
         cursor.moveToFirst();
         while (!cursor.isAfterLast())
@@ -132,7 +114,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
             i++;
             cursor.moveToNext();
         }
-        //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
+
         mAdapter.swapCursor(cursor);
         mAdapter.notifyDataSetChanged();
     }

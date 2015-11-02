@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -64,10 +63,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                     data.close();
                 }
 
-                // This method is called by the app hosting the widget (e.g., the launcher)
-                // However, our ContentProvider is not exported so it doesn't have access to the
-                // data. Therefore we need to clear (and finally restore) the calling identity so
-                // that calls use our process and permission
+                // retrieve today's matches for the widget
                 final long identityToken = Binder.clearCallingIdentity();
 
                 Uri dataByDateUri = DatabaseContract.scores_table.buildScoreWithDate();
@@ -103,29 +99,18 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 RemoteViews views = new RemoteViews(getPackageName(),
                         R.layout.widget_detail_list_item);
 
+                //display data for widget
                 views.setTextViewText(R.id.widget_home_name, data.getString(COL_HOME));
                 views.setTextViewText(R.id.widget_away_name, data.getString(COL_AWAY));
-                views.setTextViewText(R.id.widget_score_textview, Utility.getScores(data.getInt(COL_HOME_GOALS), data.getInt(COL_AWAY_GOALS)));
-                views.setTextViewText(R.id.widget_data_textview, data.getString(COL_TIME));
-                views.setImageViewResource(R.id.widget_home_crest, Utility.getTeamCrestByTeamName(data.getColumnName(COL_HOME)));
-                views.setImageViewResource(R.id.widget_away_crest, Utility.getTeamCrestByTeamName(data.getColumnName(COL_AWAY)));
+                views.setTextViewText(R.id.widget_score_textview, Utility.getScores(getBaseContext(), data.getInt(COL_HOME_GOALS), data.getInt(COL_AWAY_GOALS)));
 
+                //call detail intent with matchId
                 final Intent fillInIntent = new Intent();
-
-
                 double matchId = data.getDouble(COL_MATCH_ID);
-
-                Log.v(LOG_TAG, "match id: " + matchId);
-
                 fillInIntent.putExtra(getString(R.string.match_id), matchId);
                 views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
                 return views;
             }
-
-          /*  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-            private void setRemoteContentDescription(RemoteViews views, String description) {
-                views.setContentDescription(R.id.widget_icon, description);
-            }*/
 
             @Override
             public RemoteViews getLoadingView() {
