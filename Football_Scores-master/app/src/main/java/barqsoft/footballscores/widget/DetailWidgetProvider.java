@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import barqsoft.footballscores.MainActivity;
@@ -57,7 +58,11 @@ public class DetailWidgetProvider extends AppWidgetProvider {
 
         super.onReceive(context, intent);
 
+        Log.v(LOG_TAG, "in on receive, " + myFetchService.ACTION_DATA_UPDATED + ", " + intent.getAction());
+
         if (myFetchService.ACTION_DATA_UPDATED.equals(intent.getAction())) {
+            Log.v(LOG_TAG, "action data updated");
+
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));
