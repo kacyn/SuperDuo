@@ -8,9 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import barqsoft.footballscores.data.DatabaseContract;
-import barqsoft.footballscores.data.ScoresDBHelper;
-
 /**
  * Created by yehya khaled on 2/25/2015.
  */
@@ -43,6 +40,7 @@ public class ScoresProvider extends ContentProvider
 
     private int match_uri(Uri uri)
     {
+
         String link = uri.toString();
         {
            if(link.contentEquals(DatabaseContract.BASE_CONTENT_URI.toString()))
@@ -53,7 +51,7 @@ public class ScoresProvider extends ContentProvider
            {
                return MATCHES_WITH_DATE;
            }
-           else if(link.contentEquals(DatabaseContract.scores_table.buildScoreWithId().toString()))
+           else if(link.contentEquals(DatabaseContract.scores_table.buildScoreWithId(0).toString()))
            {
                return MATCHES_WITH_ID;
            }

@@ -18,9 +18,23 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        double matchId = -1.0;
+
+        if(getIntent() != null) {
+            matchId = getIntent().getDoubleExtra(getString(R.string.match_id), -1.0);
+            Log.v(LOG_TAG, "extra: " + matchId);
+        }
+
         Log.d(LOG_TAG, "Reached MainActivity onCreate");
         if (savedInstanceState == null) {
             my_main = new PagerFragment();
+
+
+            Bundle bundle = new Bundle();
+            bundle.putDouble(getString(R.string.match_id), matchId);
+            my_main.setArguments(bundle);
+
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, my_main)
                     .commit();

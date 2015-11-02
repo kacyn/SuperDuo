@@ -10,6 +10,9 @@ import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.Utility;
 import barqsoft.footballscores.data.DatabaseContract;
@@ -29,6 +32,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
             DatabaseContract.scores_table.DATE_COL,
             DatabaseContract.scores_table.LEAGUE_COL,
             DatabaseContract.scores_table.MATCH_DAY,
+            DatabaseContract.scores_table.MATCH_ID,
             DatabaseContract.scores_table.TIME_COL
     };
     // these indices must match the projection
@@ -40,7 +44,8 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
     public static final int COL_DATE = 5;
     public static final int COL_LEAGUE = 6;
     public static final int COL_MATCHDAY = 7;
-    public static final int COL_MATCHTIME = 8;
+    public static final int COL_MATCH_ID = 8;
+    public static final int COL_TIME = 9;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -57,19 +62,21 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 if (data != null) {
                     data.close();
                 }
+
                 // This method is called by the app hosting the widget (e.g., the launcher)
                 // However, our ContentProvider is not exported so it doesn't have access to the
                 // data. Therefore we need to clear (and finally restore) the calling identity so
                 // that calls use our process and permission
                 final long identityToken = Binder.clearCallingIdentity();
-                //String location = Utility.getPreferredLocation(DetailWidgetRemoteViewsService.this);
 
                 Uri dataByDateUri = DatabaseContract.scores_table.buildScoreWithDate();
+                Date date = new Date();
+                SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
 
                 data = getContentResolver().query(dataByDateUri,
                         SCORES_COLUMNS,
                         null,
-                        null,
+                        new String[] {mformat.format(date)},
                         DatabaseContract.scores_table.TIME_COL + " ASC");
                 Binder.restoreCallingIdentity(identityToken);
             }
@@ -89,8 +96,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public RemoteViews getViewAt(int position) {
-                if (position == AdapterView.INVALID_POSITION ||
-                        data == null || !data.moveToPosition(position)) {
+                if (position == AdapterView.INVALID_POSITION || data == null || !data.moveToPosition(position)) {
                     return null;
                 }
                 RemoteViews views = new RemoteViews(getPackageName(),
@@ -99,69 +105,18 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 views.setTextViewText(R.id.widget_home_name, data.getString(COL_HOME));
                 views.setTextViewText(R.id.widget_away_name, data.getString(COL_AWAY));
                 views.setTextViewText(R.id.widget_score_textview, Utility.getScores(data.getInt(COL_HOME_GOALS), data.getInt(COL_AWAY_GOALS)));
+                views.setTextViewText(R.id.widget_data_textview, data.getString(COL_TIME));
                 views.setImageViewResource(R.id.widget_home_crest, Utility.getTeamCrestByTeamName(data.getColumnName(COL_HOME)));
                 views.setImageViewResource(R.id.widget_away_crest, Utility.getTeamCrestByTeamName(data.getColumnName(COL_AWAY)));
 
+                final Intent fillInIntent = new Intent();
 
-                //TODO: send intent to details view
-                /*final Intent fillInIntent = new Intent();
-                String locationSetting =
-                        Utility.getPreferredLocation(DetailWidgetRemoteViewsService.this);
-                Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                        locationSetting,
-                        dateInMillis);
-                fillInIntent.setData(weatherUri);
-                views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);*/
+
+                double matchId = data.getDouble(COL_MATCH_ID);
+
+                fillInIntent.putExtra(getString(R.string.match_id), matchId);
+                views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
                 return views;
-
-                /*
-                String matchTime = cursor.getString(COL_MATCHTIME);
-                mHolder.date.setText(matchTime);
-                String[] matchTimeArray = matchTime.split(":");
-
-
-                mHolder.match_id = cursor.getDouble(COL_ID);
-
-
-                //Log.v(FetchScoreTask.LOG_TAG,mHolder.home_name.getText() + " Vs. " + mHolder.away_name.getText() +" id " + String.valueOf(mHolder.match_id));
-                //Log.v(FetchScoreTask.LOG_TAG,String.valueOf(detail_match_id));
-                LayoutInflater vi = (LayoutInflater) context.getApplicationContext()
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View v = vi.inflate(R.layout.detail_fragment, null);
-                ViewGroup container = (ViewGroup) view.findViewById(R.id.details_fragment_container);
-                if(mHolder.match_id == detail_match_id)
-                {
-                    //Log.v(FetchScoreTask.LOG_TAG,"will insert extraView");
-
-                    container.addView(v, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    TextView match_day = (TextView) v.findViewById(R.id.matchday_textview);
-                    match_day.setText(Utility.getMatchDay(cursor.getInt(COL_MATCHDAY),
-                            cursor.getInt(COL_LEAGUE)));
-                    match_day.setContentDescription(Utility.getMatchDay(cursor.getInt(COL_MATCHDAY),
-                            cursor.getInt(COL_LEAGUE)));
-
-                    TextView league = (TextView) v.findViewById(R.id.league_textview);
-                    league.setText(Utility.getLeague(cursor.getInt(COL_LEAGUE)));
-                    league.setContentDescription("League: " + Utility.getLeague(cursor.getInt(COL_LEAGUE)));
-
-                    Button share_button = (Button) v.findViewById(R.id.share_button);
-                    share_button.setContentDescription("Share scores");
-                    share_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //add Share Action
-                            context.startActivity(createShareForecastIntent(mHolder.home_name.getText() + " "
-                                    + mHolder.score.getText() + " " + mHolder.away_name.getText() + " "));
-                        }
-                    });
-                }
-                else
-                {
-                    container.removeAllViews();
-                }
-
-                */
-
             }
 
           /*  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)

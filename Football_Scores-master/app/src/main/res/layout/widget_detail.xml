@@ -17,6 +17,14 @@
         android:layout_height="match_parent"
         android:id = "@+id/widget_list"
         android:divider="@android:color/transparent"
-        android:dividerHeight="15sp" />
-
+        android:dividerHeight="5sp"
+        tools:listitem="@layout/widget_detail_list_item"/>
+    <TextView
+        android:id="@+id/widget_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:fontFamily="sans-serif-condensed"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:text="@string/empty_scores_list"/>
 </FrameLayout>
