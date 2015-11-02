@@ -25,7 +25,6 @@ import it.jaschke.alexandria.barcode.BarcodeCaptureActivity;
 import it.jaschke.alexandria.data.BookContract;
 import it.jaschke.alexandria.services.BookService;
 
-
 public class AddBookFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = AddBookFragment.class.getSimpleName();
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
@@ -90,8 +89,9 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             public void afterTextChanged(Editable s) {
                 String isbn = s.toString();
 
-                if(isValidIsbn(isbn)) {
-                    addBookToList(isbn);
+                if (isValidIsbn(isbn)) {
+                    mIsbn = isbn;
+                    addBookToList(mIsbn);
                 }
             }
         });
@@ -202,15 +202,21 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(mBookSubTitle);
 
         mAuthors = data.getString(data.getColumnIndex(BookContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = mAuthors.split(",");
-        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(mAuthors.replace(",","\n"));
+
+        if(mAuthors != null) {
+            String[] authorsArr = mAuthors.split(",");
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+            ((TextView) rootView.findViewById(R.id.authors)).setText(mAuthors.replace(",", "\n"));
+        }
 
         mImgUrl = data.getString(data.getColumnIndex(BookContract.BookEntry.IMAGE_URL));
 
         ImageView bookImageView = (ImageView) rootView.findViewById(R.id.bookCover);
         bookImageView.setVisibility(View.VISIBLE);
-        Picasso.with(getActivity()).load(mImgUrl).into(bookImageView);
+
+        if(mImgUrl != null && !mImgUrl.isEmpty()){
+            Picasso.with(getActivity()).load(mImgUrl).into(bookImageView);
+        }
 
         String categories = data.getString(data.getColumnIndex(BookContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
@@ -275,6 +281,7 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         int sum = 0;
 
         if(isbnCharArray.length == 13) {
+
             for(int i = 0; i < 12; i++) {
                 if(i % 2 == 0) {
                     sum += Character.getNumericValue(isbnCharArray[i]); //asuming this is 0..9, not '0'..'9'
@@ -283,7 +290,7 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                 }
             }
 
-            if(Character.getNumericValue(isbnCharArray[12]) == (10 - sum % 10)) {
+            if(Character.getNumericValue(isbnCharArray[12]) == ((10 - sum % 10) % 10)) {
                 return true;
             }
         }

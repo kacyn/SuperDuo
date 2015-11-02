@@ -26,6 +26,8 @@ public class ListOfBooksFragment extends Fragment implements LoaderManager.Loade
     private int position = ListView.INVALID_POSITION;
     private EditText searchText;
 
+    boolean mAlreadyLoaded = false;
+
     private final int LOADER_ID = 10;
 
     public ListOfBooksFragment() {
@@ -38,6 +40,8 @@ public class ListOfBooksFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        super.onCreateView(inflater, container, savedInstanceState);
 
         Cursor cursor = getActivity().getContentResolver().query(
                 BookContract.BookEntry.CONTENT_URI,

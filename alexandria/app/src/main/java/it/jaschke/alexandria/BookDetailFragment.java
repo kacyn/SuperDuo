@@ -124,14 +124,22 @@ public class BookDetailFragment extends Fragment implements LoaderManager.Loader
         ((TextView) rootView.findViewById(R.id.fullBookDesc)).setText(desc);
 
         String authors = data.getString(data.getColumnIndex(BookContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+
+        if(authors != null){
+            String[] authorsArr = authors.split(",");
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+            ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        }
+
+
         String imgUrl = data.getString(data.getColumnIndex(BookContract.BookEntry.IMAGE_URL));
 
         ImageView bookImageView = (ImageView) rootView.findViewById(R.id.fullBookCover);
         bookImageView.setVisibility(View.VISIBLE);
-        Picasso.with(getActivity()).load(imgUrl).into(bookImageView);
+
+        if(imgUrl != null && !imgUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(imgUrl).into(bookImageView);
+        }
 
         String categories = data.getString(data.getColumnIndex(BookContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
