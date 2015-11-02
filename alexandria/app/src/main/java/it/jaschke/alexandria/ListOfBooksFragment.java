@@ -43,6 +43,13 @@ public class ListOfBooksFragment extends Fragment implements LoaderManager.Loade
 
         super.onCreateView(inflater, container, savedInstanceState);
 
+        if (savedInstanceState == null && !mAlreadyLoaded) {
+            mAlreadyLoaded = true;
+        }
+        else {
+            restartLoader();
+        }
+
         Cursor cursor = getActivity().getContentResolver().query(
                 BookContract.BookEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
