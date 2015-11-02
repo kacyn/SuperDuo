@@ -158,22 +158,9 @@ public class BookService extends IntentService {
         final String IMG_URL_PATH = "imageLinks";
         final String IMG_URL = "thumbnail";
 
-        final String MESSAGE_CODE = "cod";
-
         try {
             JSONObject bookJson = new JSONObject(bookJsonString);
 
-            /*if (bookJson.has(MESSAGE_CODE)) {
-                int errorCode = bookJson.getInt(MESSAGE_CODE);
-
-                if (errorCode != HttpURLConnection.HTTP_OK) {
-                    Toast toast = Toast.makeText(this, "ISBN not valid!", Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    return;
-                }
-            }
-*/
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
                 bookArray = bookJson.getJSONArray(ITEMS);

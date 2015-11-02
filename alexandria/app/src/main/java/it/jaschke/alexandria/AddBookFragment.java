@@ -9,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,15 +38,10 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     private final String BOOK_SUBTITLE="bookSubtitle";
     private final String AUTHORS="authors";
     private final String IMG_URL="imgUrl";
-    private static final String SCAN_FORMAT = "scanFormat";
-    private static final String SCAN_CONTENTS = "scanContents";
 
     public static final String BarcodeObject = "Barcode";
 
     public static final int BARCODE_REQUEST = 9001;
-
-    private String mScanFormat = "Format:";
-    private String mScanContents = "Contents:";
 
     //book details
     private String mBookTitle;
@@ -96,14 +90,7 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             public void afterTextChanged(Editable s) {
                 String isbn = s.toString();
 
-                Log.v(LOG_TAG, "in after text changed.  isbn: " + isbn);
-
                 if(isValidIsbn(isbn)) {
-
-                    Log.v(LOG_TAG, "isbn valid");
-
-                    Log.v(LOG_TAG, "adding book to list");
-
                     addBookToList(isbn);
                 }
             }
@@ -112,13 +99,6 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // This is the callback method that the system will invoke when your button is
-                // clicked. You might do this by launching another app or by including the
-                //functionality directly in this app.
-                // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
-                // are using an external app.
-                //when you're done, remove the toast below.
-
                 Intent intent = new Intent(getActivity(), BarcodeCaptureActivity.class);
                 intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                 startActivityForResult(intent, BARCODE_REQUEST);
@@ -128,20 +108,17 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v(LOG_TAG, "save button pressed");
-                Toast toast = Toast.makeText(getActivity(), "Book Added to List!", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getActivity(), getString(R.string.book_added), Toast.LENGTH_SHORT);
                 toast.show();
 
                 ean.setText("");
                 clearFields();
-
             }
         });
 
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v(LOG_TAG, "delete button pressed");
                 Intent bookIntent = new Intent(getActivity(), BookService.class);
                 bookIntent.putExtra(BookService.EAN, mIsbn);
                 bookIntent.setAction(BookService.DELETE_BOOK);
@@ -177,7 +154,6 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                     Barcode barcode = (Barcode) data.getExtras().get(BarcodeObject);
 
                     String isbn = barcode.rawValue;
-                    Log.v("Barcode", "Barcode result: " + isbn);
 
                     if(isValidIsbn(isbn)) {
                         mIsbn = isbn;
@@ -195,7 +171,6 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.v(LOG_TAG, "in oncreateloader");
 
         Long isbn = 0l;
 
@@ -215,7 +190,6 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-        Log.v(LOG_TAG, "in onloadfinished");
 
         if (!data.moveToFirst()) {
             return;
@@ -251,7 +225,6 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void clearFields(){
-        Log.v(LOG_TAG, "in clear fields");
 
         mIsbn = null;
         mBookTitle = null;
@@ -277,7 +250,6 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
     private void addBookToList(String isbn){
 
         if(Utility.isNetworkAvailable(getActivity())) {
-            Log.v(LOG_TAG, "network access");
             //Once we have an ISBN, start a book intent
             Intent bookIntent = new Intent(getActivity(), BookService.class);
             bookIntent.putExtra(BookService.EAN, isbn);
@@ -286,11 +258,9 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             AddBookFragment.this.restartLoader();
         }
         else {
-            Log.v(LOG_TAG, "no network access");
             Toast toast = Toast.makeText(getActivity(), getString(R.string.no_network_access), Toast.LENGTH_SHORT);
             toast.show();
         }
-
 
     }
 
@@ -300,14 +270,11 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
             isbn = "978"+isbn;
         }
 
-        Log.v(LOG_TAG, "in isvalidisbn.  isbn: " + isbn);
-
         char[] isbnCharArray = isbn.toCharArray();
 
         int sum = 0;
 
         if(isbnCharArray.length == 13) {
-            Log.v(LOG_TAG, "length is 13");
             for(int i = 0; i < 12; i++) {
                 if(i % 2 == 0) {
                     sum += Character.getNumericValue(isbnCharArray[i]); //asuming this is 0..9, not '0'..'9'
@@ -316,16 +283,10 @@ public class AddBookFragment extends Fragment implements LoaderManager.LoaderCal
                 }
             }
 
-            Log.v(LOG_TAG, "sum: " + sum);
-
-
             if(Character.getNumericValue(isbnCharArray[12]) == (10 - sum % 10)) {
-                Log.v(LOG_TAG, "valid isbn13");
                 return true;
             }
         }
-
-        Log.v(LOG_TAG, "invalid isbn");
         return false;
     }
 }

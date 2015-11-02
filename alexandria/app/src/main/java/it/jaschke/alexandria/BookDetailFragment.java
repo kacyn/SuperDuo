@@ -72,7 +72,29 @@ public class BookDetailFragment extends Fragment implements LoaderManager.Loader
 
         MenuItem menuItem = menu.findItem(R.id.action_share);
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        if (bookTitle != null) {
+            shareActionProvider.setShareIntent(createShareBookIntent());
+        }
     }
+
+    private Intent createShareBookIntent() {
+        //share youtube link
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        shareIntent.setType("text/plain");
+
+        if(bookTitle == null) {
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Error sharing book information.");
+        }
+        else {
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text) + bookTitle);
+        }
+
+        return shareIntent;
+    }
+
 
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -95,12 +117,6 @@ public class BookDetailFragment extends Fragment implements LoaderManager.Loader
         bookTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.fullBookTitle)).setText(bookTitle);
 
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text) + bookTitle);
-        shareActionProvider.setShareIntent(shareIntent);
-
         String bookSubTitle = data.getString(data.getColumnIndex(BookContract.BookEntry.SUBTITLE));
         ((TextView) rootView.findViewById(R.id.fullBookSubTitle)).setText(bookSubTitle);
 
@@ -117,18 +133,13 @@ public class BookDetailFragment extends Fragment implements LoaderManager.Loader
         bookImageView.setVisibility(View.VISIBLE);
         Picasso.with(getActivity()).load(imgUrl).into(bookImageView);
 
-        /*if(Patterns.WEB_URL.matcher(imgUrl).matches()){
-            new DownloadImage((ImageView) rootView.findViewById(R.id.fullBookCover)).execute(imgUrl);
-            rootView.findViewById(R.id.fullBookCover).setVisibility(View.VISIBLE);
-        }*/
-
         String categories = data.getString(data.getColumnIndex(BookContract.CategoryEntry.CATEGORY));
         ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
 
-//        if(rootView.findViewById(R.id.right_container)!=null){
-//            rootView.findViewById(R.id.backButton).setVisibility(View.INVISIBLE);
-//        }
-
+        // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+        if (shareActionProvider != null) {
+            shareActionProvider.setShareIntent(createShareBookIntent());
+        }
     }
 
     @Override

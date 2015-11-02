@@ -43,4 +43,6 @@
 
     <string name="no_network_access">"No network access - Can't complete search"</string>
     <string name="or">or</string>
+
+    <string name="book_added">Book Added to List!</string>
 </resources>
