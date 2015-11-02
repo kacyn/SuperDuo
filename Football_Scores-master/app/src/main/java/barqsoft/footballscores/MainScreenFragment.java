@@ -27,6 +27,19 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
 
+    private static final String[] SCORES_COLUMNS = {
+            DatabaseContract.scores_table._ID,
+            DatabaseContract.scores_table.HOME_COL,
+            DatabaseContract.scores_table.AWAY_COL,
+            DatabaseContract.scores_table.HOME_GOALS_COL,
+            DatabaseContract.scores_table.AWAY_GOALS_COL,
+            DatabaseContract.scores_table.DATE_COL,
+            DatabaseContract.scores_table.LEAGUE_COL,
+            DatabaseContract.scores_table.MATCH_DAY,
+            DatabaseContract.scores_table.MATCH_ID,
+            DatabaseContract.scores_table.TIME_COL
+    };
+
     public MainScreenFragment()
     {
     }
@@ -90,8 +103,13 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
     {
-        return new CursorLoader(getActivity(), DatabaseContract.scores_table.buildScoreWithDate(),
-                null,null,fragmentdate,null);
+        return new CursorLoader(
+                getActivity(),
+                DatabaseContract.scores_table.buildScoreWithDate(),
+                SCORES_COLUMNS,
+                null,
+                fragmentdate,
+                null);
     }
 
     @Override

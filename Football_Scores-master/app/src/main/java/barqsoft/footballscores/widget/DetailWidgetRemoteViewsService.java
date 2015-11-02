@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -113,6 +114,8 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
 
 
                 double matchId = data.getDouble(COL_MATCH_ID);
+
+                Log.v(LOG_TAG, "match id: " + matchId);
 
                 fillInIntent.putExtra(getString(R.string.match_id), matchId);
                 views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);

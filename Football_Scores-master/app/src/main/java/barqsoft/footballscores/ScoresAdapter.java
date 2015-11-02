@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +16,26 @@ import android.widget.TextView;
  */
 public class ScoresAdapter extends CursorAdapter
 {
-    public static final int COL_HOME = 3;
-    public static final int COL_AWAY = 4;
-    public static final int COL_HOME_GOALS = 6;
-    public static final int COL_AWAY_GOALS = 7;
-    public static final int COL_DATE = 1;
-    public static final int COL_LEAGUE = 5;
-    public static final int COL_MATCHDAY = 9;
-    public static final int COL_ID = 8;
-    public static final int COL_MATCHTIME = 2;
+    public static final int COL_ID = 0;
+    public static final int COL_HOME = 1;
+    public static final int COL_AWAY = 2;
+    public static final int COL_HOME_GOALS = 3;
+    public static final int COL_AWAY_GOALS = 4;
+    public static final int COL_DATE = 5;
+    public static final int COL_LEAGUE = 6;
+    public static final int COL_MATCHDAY = 7;
+    public static final int COL_MATCH_ID = 8;
+    public static final int COL_MATCHTIME = 9;
+
+//    public static final int COL_HOME = 3;
+//    public static final int COL_AWAY = 4;
+//    public static final int COL_HOME_GOALS = 6;
+//    public static final int COL_AWAY_GOALS = 7;
+//    public static final int COL_DATE = 1;
+//    public static final int COL_LEAGUE = 0;
+//    public static final int COL_MATCHDAY = 9;
+//    public static final int COL_ID = 8;
+//    public static final int COL_MATCHTIME = 2;
     public double detail_match_id = 0;
     private String FOOTBALL_SCORES_HASHTAG = "#Football_Scores";
     public ScoresAdapter(Context context, Cursor cursor, int flags)
@@ -69,7 +81,7 @@ public class ScoresAdapter extends CursorAdapter
             mHolder.score.setContentDescription(cursor.getString(COL_HOME_GOALS) + " to " + cursor.getString(COL_AWAY_GOALS));
         }
 
-        mHolder.match_id = cursor.getDouble(COL_ID);
+        mHolder.match_id = cursor.getDouble(COL_MATCH_ID);
         mHolder.home_crest.setImageResource(Utility.getTeamCrestByTeamName(
                 cursor.getString(COL_HOME)));
         //mHolder.home_crest.setContentDescription("Team crest for " + cursor.getString(COL_HOME));
@@ -94,6 +106,8 @@ public class ScoresAdapter extends CursorAdapter
                     cursor.getInt(COL_LEAGUE)));
             match_day.setContentDescription(Utility.getMatchDay(cursor.getInt(COL_MATCHDAY),
                     cursor.getInt(COL_LEAGUE)));
+
+            Log.v("Detail adapter ", "League: " + cursor.getInt(COL_LEAGUE) + " League name: " + Utility.getLeague(cursor.getInt(COL_LEAGUE)));
 
             TextView league = (TextView) v.findViewById(R.id.league_textview);
             league.setText(Utility.getLeague(cursor.getInt(COL_LEAGUE)));
